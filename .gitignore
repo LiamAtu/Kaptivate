@@ -68,3 +68,18 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Environment & secrets — NEVER COMMIT
+src/environments/environment.ts
+src/environments/environment.prod.ts
+.env
+.env.local
+.env.development
+.env.production
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebaserc
