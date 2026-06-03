@@ -1,0 +1,42 @@
+rules_version='2'
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+return
+get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role ==
+&#39;admin&#39;;
+}
+function isOwner(clientId) {
+return request.auth.uid == clientId;
+}
+match /users/{userId} {
+allow read: if isOwner(userId) || isAdmin();
+allow update: if isOwner(userId) &amp;&amp; !(&#39;role&#39; in request.resource.data);
+allow create: if request.auth != null;
+}
+match /projects/{projectId} {
+allow read: if isOwner(resource.data.clientId) || isAdmin();
+allow write: if isAdmin();
+}
+match /threads/{threadId} {
+allow read: if isOwner(resource.data.clientId) || isAdmin();
+allow write: if isOwner(resource.data.clientId) || isAdmin();
+match /messages/{messageId} {
+allow read, write: if isOwner(
+get(/databases/$(database)/documents/threads/$(threadId)).data.clientId
+) || isAdmin();
+}
+}
+match /files/{fileId} {
+allow read: if isOwner(resource.data.clientId) || isAdmin();
+allow create: if request.auth != null;
+allow delete: if isAdmin();
+}
+match /bookings/{bookingId} {
+allow read: if isOwner(resource.data.clientId) || isAdmin();
+allow create: if request.auth != null;
+allow update: if isAdmin();
+}
+  }
+}
