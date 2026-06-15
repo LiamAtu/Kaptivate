@@ -35,3 +35,30 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+ion-app {
+    background-image: url("assets/images/film_grain.gif");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+ion-content {
+  --background: transparent;
+}
+:root{
+    //colours 
+    ---app-color-blue:#0c1c4d;
+    ---app-color-HighlightBlue:#1a2b64;
+    ---app-color-LightGrey:#c8c8c8;
+    ---app-color-MediumGrey:#515151;
+    ---app-color-DarkGrey:#262626;
+    ---app-color-BlueGrey:#2E3842;
+
+    //fonts
+    --app-font-MainHeading: 'Tahoma', sans-serif;
+    --app-font-body1: 'Trebuchet MS', sans-serif;
+    --app-font-body2: 'Georgia', serif;
+    --app-font-Special: 'Garamond', serif;
+    --app-font-smallPrint: 'Courier New', monospace;
+}
