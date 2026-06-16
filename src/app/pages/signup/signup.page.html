@@ -1,13 +1,71 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>signup</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="signup-wrapper">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">signup</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <!-- Left panel — branding -->
+    <div class="signup-brand">
+      <div class="brand-content">
+        <h1 class="brand-name">KAPTIVATE</h1>
+        <p class="brand-tagline">YOUR STORY CRAFTED WITH<br><span>KAPTIVATING VISUALS</span></p>
+        <p class="brand-sub">Premium video production — Dublin, Galway & nationwide</p>
+      </div>
+    </div>
+
+    <!-- Right panel — form -->
+    <div class="signup-form-panel">
+      <div class="form-container">
+
+        <h2 class="form-title">Create Account</h2>
+        <p class="form-subtitle">Join the Kaptivate client portal</p>
+
+        <div class="input-group">
+          <label>Full Name</label>
+          <input
+            type="text"
+            [(ngModel)]="displayName"
+            placeholder="Your full name"
+            class="kap-input"/>
+        </div>
+
+        <div class="input-group">
+          <label>Email</label>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            placeholder="you@example.com"
+            class="kap-input"/>
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <input
+            type="password"
+            [(ngModel)]="password"
+            placeholder="Min. 6 characters"
+            class="kap-input"/>
+        </div>
+
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            [(ngModel)]="confirmPassword"
+            placeholder="Repeat your password"
+            class="kap-input"/>
+        </div>
+
+        <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+        <button class="kap-button" (click)="signUp()" [disabled]="loading">
+          <span *ngIf="!loading">Create Account</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+
+        <p class="form-link">
+          Already have an account? <a routerLink="/login">Sign in</a>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
 </ion-content>

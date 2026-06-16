@@ -1,13 +1,53 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>login</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="login-wrapper">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">login</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <!-- Left panel — branding -->
+    <div class="login-brand">
+      <div class="brand-content">
+        <h1 class="brand-name">KAPTIVATE</h1>
+        <p class="brand-tagline">YOUR STORY CRAFTED WITH<br><span>KAPTIVATING VISUALS</span></p>
+        <p class="brand-sub">Premium video production — Dublin, Galway & nationwide</p>
+      </div>
+    </div>
+
+    <!-- Right panel — form -->
+    <div class="login-form-panel">
+      <div class="form-container">
+
+        <h2 class="form-title">Welcome Back</h2>
+        <p class="form-subtitle">Sign in to your client portal</p>
+
+        <div class="input-group">
+          <label>Email</label>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            placeholder="you@example.com"
+            class="kap-input"/>
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <input
+            type="password"
+            [(ngModel)]="password"
+            placeholder="Your password"
+            class="kap-input"/>
+        </div>
+
+        <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+        <button class="kap-button" (click)="login()" [disabled]="loading">
+          <span *ngIf="!loading">Sign In</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+
+        <p class="form-link">
+          Don't have an account? <a routerLink="/signup">Sign up</a>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
 </ion-content>
