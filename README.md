@@ -4,7 +4,7 @@
 ![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
-
+**Work in progress.** The website and client portal are built, but Firebase isn't connected yet and the website text is still placeholder content.
 A website and client portal for **Kaptivate**, a video production and photography business in Galway.
 
 Visitors can browse services, send an enquiry and request a booking. Clients get their own portal to follow each stage of their project, share files, accept quotes, sign contracts, view invoices and message the owner. The owner runs every client's work from the same portal.
