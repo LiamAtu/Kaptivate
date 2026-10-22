@@ -1,3 +1,26 @@
-<p>
-  footer works!
-</p>
+<footer>
+  <div class="inner">
+    <div>
+      <div class="logo">KAPTIVATE</div>
+      <p class="kap-faint">{{ site.intro }}</p>
+    </div>
+    <div class="cols">
+      <div>
+        <p class="kap-eyebrow">Explore</p>
+        <a routerLink="/services">Services</a>
+        <a routerLink="/about">About</a>
+        <a routerLink="/booking">Book a shoot</a>
+        <a routerLink="/contact">Contact</a>
+      </div>
+      <div>
+        <p class="kap-eyebrow">Get in touch</p>
+        @if (site.email) { <a [href]="'mailto:' + site.email">{{ site.email }}</a> }
+        @if (site.phone) { <a [href]="'tel:' + site.phone">{{ site.phone }}</a> }
+        @if (site.instagram) { <a [href]="site.instagram" target="_blank" rel="noopener">Instagram</a> }
+        <span>{{ site.location }}</span>
+        <a routerLink="/login">Client login</a>
+      </div>
+    </div>
+  </div>
+  <p class="copy">© {{ year }} Kaptivate. All rights reserved.</p>
+</footer>

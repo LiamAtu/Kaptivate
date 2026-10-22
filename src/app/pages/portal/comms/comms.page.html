@@ -1,13 +1,93 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>comms</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-portal-header title="Messages"></app-portal-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">comms</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="kap-page">
+
+    <div class="kap-page-head">
+      <div>
+        <p class="kap-eyebrow">Messages</p>
+        <h1>Conversations</h1>
+      </div>
+      <button class="kap-btn" (click)="starting = true; selectedId.set(null)">New message</button>
+    </div>
+
+    <div class="chat" [class.has-selection]="selectedId() || starting">
+
+      <!-- Conversation list -->
+      <aside class="kap-card list">
+        @for (t of sorted(); track t.threadId) {
+          <button class="thread" [class.active]="t.threadId === selectedId()" (click)="open(t)">
+            <div class="kap-row">
+              <strong>{{ t.subject }}</strong>
+              @if (isUnread(t)) { <span class="new"></span> }
+            </div>
+            @if (isAdmin()) { <span class="kap-faint">{{ t.clientName }}</span> }
+            <span class="preview">{{ t.lastMessage }}</span>
+            <span class="kap-faint">{{ t.lastMessageAt | when:'short' }}</span>
+          </button>
+        } @empty {
+          <p class="kap-empty">No conversations yet.</p>
+        }
+      </aside>
+
+      <!-- New conversation -->
+      @if (starting) {
+        <section class="kap-card pane">
+          <button class="kap-link back" (click)="starting = false">← Back</button>
+          <h2>New message</h2>
+          @if (isAdmin()) {
+            <div class="kap-field">
+              <label>Client</label>
+              <select class="kap-control" [(ngModel)]="newClient">
+                <option value="">Choose a client…</option>
+                @for (c of clients(); track c.uid) { <option [value]="c.uid">{{ c.displayName }}</option> }
+              </select>
+            </div>
+          }
+          <div class="kap-field">
+            <label>Subject</label>
+            <input class="kap-control" [(ngModel)]="newSubject" placeholder="e.g. Edits to the first draft" />
+          </div>
+          <div class="kap-field">
+            <label>Message</label>
+            <textarea class="kap-control" [(ngModel)]="newMessage"></textarea>
+          </div>
+          @if (error) { <p class="kap-alert">{{ error }}</p> }
+          <button class="kap-btn" (click)="startThread()" [disabled]="sending">Send</button>
+        </section>
+      }
+
+      <!-- Open conversation -->
+      @if (!starting && selected(); as t) {
+        <section class="kap-card pane conversation">
+          <button class="kap-link back" (click)="selectedId.set(null)">← All conversations</button>
+          <div class="conv-head">
+            <h2>{{ t.subject }}</h2>
+            @if (isAdmin()) { <span class="kap-faint">with {{ t.clientName }}</span> }
+          </div>
+
+          <div class="messages">
+            @for (m of messages(); track m.messageId) {
+              <div class="bubble" [class.mine]="isMine(m)">
+                <p>{{ m.content }}</p>
+                <span>{{ isMine(m) ? 'You' : m.senderName }} · {{ m.sentAt | when:'short' }}</span>
+              </div>
+            }
+            <div #bottom></div>
+          </div>
+
+          <div class="composer">
+            <textarea class="kap-control" [(ngModel)]="draft" (keydown)="onKey($event)"
+                      placeholder="Write a message… (Enter to send, Shift+Enter for a new line)"></textarea>
+            <button class="kap-btn" (click)="send()" [disabled]="sending || !draft.trim()">Send</button>
+          </div>
+        </section>
+      }
+
+      @if (!starting && !selected()) {
+        <section class="kap-card pane placeholder kap-empty">Choose a conversation or start a new one.</section>
+      }
+    </div>
+
+  </div>
 </ion-content>

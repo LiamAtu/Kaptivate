@@ -1,3 +1,22 @@
-<p>
-  header works!
-</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <nav class="bar">
+      <a routerLink="/home" class="logo">KAPTIVATE</a>
+
+      <button class="burger" (click)="open = !open" [attr.aria-expanded]="open" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="links" [class.open]="open">
+        @for (l of links; track l.url) {
+          <a [routerLink]="l.url" routerLinkActive="active" (click)="open = false">{{ l.label }}</a>
+        }
+        @if (user$ | async) {
+          <a routerLink="/portal/dashboard" class="kap-btn small" (click)="open = false">Client portal</a>
+        } @else {
+          <a routerLink="/login" class="kap-btn small" (click)="open = false">Client login</a>
+        }
+      </div>
+    </nav>
+  </ion-toolbar>
+</ion-header>

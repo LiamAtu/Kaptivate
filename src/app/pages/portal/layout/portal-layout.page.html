@@ -1,0 +1,56 @@
+<ion-split-pane contentId="portal-main" when="lg">
+
+  <ion-menu contentId="portal-main" type="overlay">
+    <ion-content>
+      <div class="menu">
+        <a class="brand" routerLink="/home">KAPTIVATE</a>
+        <p class="kap-eyebrow">Client portal</p>
+
+        @if (profile$ | async; as profile) {
+          <div class="who">
+            <strong>{{ profile.displayName }}</strong>
+            <span>{{ profile.role === 'admin' ? 'Owner' : (profile.companyName || profile.email) }}</span>
+          </div>
+
+          <nav>
+            @for (item of items; track item.url) {
+              <ion-menu-toggle [autoHide]="false">
+                <a [routerLink]="item.url" routerLinkActive="active" class="nav-link">
+                  <ion-icon [name]="item.icon"></ion-icon>
+                  <span>{{ item.label }}</span>
+                  @if (item.url === '/portal/comms' && ((unread$ | async) ?? 0) > 0) {
+                    <span class="badge">{{ unread$ | async }}</span>
+                  }
+                </a>
+              </ion-menu-toggle>
+            }
+
+            @if (profile.role === 'admin') {
+              <p class="kap-eyebrow section">Owner</p>
+              @for (item of adminItems; track item.url) {
+                <ion-menu-toggle [autoHide]="false">
+                  <a [routerLink]="item.url" routerLinkActive="active" class="nav-link">
+                    <ion-icon [name]="item.icon"></ion-icon>
+                    <span>{{ item.label }}</span>
+                  </a>
+                </ion-menu-toggle>
+              }
+            }
+          </nav>
+        }
+
+        <div class="menu-foot">
+          <a routerLink="/home" class="nav-link">
+            <ion-icon name="globe-outline"></ion-icon><span>Website</span>
+          </a>
+          <button class="nav-link" (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon><span>Sign out</span>
+          </button>
+        </div>
+      </div>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="portal-main"></ion-router-outlet>
+
+</ion-split-pane>

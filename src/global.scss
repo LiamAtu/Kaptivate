@@ -62,3 +62,301 @@ ion-content {
     --app-font-Special: 'Garamond', serif;
     --app-font-smallPrint: 'Courier New', monospace;
 }
+
+/* =====================================================================
+ * Kaptivate shared styles (portal + public site)
+ * Built on the brand colours above.
+ * ===================================================================== */
+:root {
+  --kap-navy: #0c1c4d;
+  --kap-navy-light: #1a2b64;
+  --kap-panel: rgba(38, 38, 38, 0.85);
+  --kap-field: rgba(46, 56, 66, 0.9);
+  --kap-line: rgba(255, 255, 255, 0.1);
+  --kap-text: #ffffff;
+  --kap-muted: #c8c8c8;
+  --kap-faint: #8a8f99;
+  --kap-green: #4cd18a;
+  --kap-amber: #f2b84b;
+  --kap-red: #ff6b6b;
+  --kap-blue: #6f9cff;
+}
+
+/* The site is always dark (film-grain background), so text is always light –
+   even when the visitor's device is in light mode. */
+:root {
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+  --ion-toolbar-color: #ffffff;
+}
+
+body {
+  color: var(--kap-text);
+  font-family: var(--app-font-body1);
+}
+
+ion-content {
+  --color: var(--kap-text);
+}
+
+/* ---- Page frame ---- */
+.kap-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.kap-page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+
+  h1 {
+    font-family: var(--app-font-MainHeading);
+    font-size: 1.8rem;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: var(--kap-muted);
+  }
+}
+
+.kap-eyebrow {
+  font-family: var(--app-font-smallPrint);
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--kap-faint);
+}
+
+/* ---- Cards ---- */
+.kap-card {
+  background: var(--kap-panel);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--kap-line);
+  border-radius: 8px;
+  padding: 22px;
+  margin-bottom: 18px;
+
+  h2, h3 {
+    font-family: var(--app-font-MainHeading);
+    margin: 0 0 6px;
+  }
+}
+
+.kap-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  margin-bottom: 18px;
+
+  > .kap-card { margin-bottom: 0; }
+
+  /* Number tiles sit two-up on phones */
+  &.stats {
+    @media (max-width: 600px) {
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      .kap-stat .value { font-size: 1.5rem; }
+    }
+  }
+}
+
+.kap-stat {
+  .value {
+    font-family: var(--app-font-MainHeading);
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .label {
+    color: var(--kap-muted);
+    font-size: 0.9rem;
+  }
+}
+
+.kap-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.kap-muted { color: var(--kap-muted); }
+.kap-faint { color: var(--kap-faint); font-size: 0.85rem; }
+
+.kap-empty {
+  text-align: center;
+  color: var(--kap-faint);
+  padding: 36px 12px;
+}
+
+/* ---- Forms ---- */
+.kap-field {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-family: var(--app-font-smallPrint);
+    font-size: 0.72rem;
+    color: var(--kap-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+}
+
+.kap-control {
+  width: 100%;
+  background: var(--kap-field);
+  border: 1px solid var(--kap-line);
+  border-radius: 4px;
+  padding: 12px 14px;
+  color: var(--kap-text);
+  font-family: var(--app-font-body1);
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+
+  &:focus { border-color: var(--kap-blue); }
+  &::placeholder { color: #6c7280; }
+}
+
+textarea.kap-control { min-height: 110px; resize: vertical; }
+select.kap-control option { background: #1d2530; }
+
+.kap-form-grid {
+  display: grid;
+  gap: 0 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* ---- Buttons ---- */
+.kap-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--kap-navy), var(--kap-navy-light));
+  color: var(--kap-text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 11px 20px;
+  font-family: var(--app-font-MainHeading);
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s, border-color 0.2s;
+
+  &:hover { opacity: 0.85; border-color: rgba(255, 255, 255, 0.45); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  &.ghost { background: transparent; }
+  &.danger { background: transparent; border-color: rgba(255, 107, 107, 0.5); color: var(--kap-red); }
+  &.small { padding: 7px 12px; font-size: 0.7rem; }
+}
+
+.kap-link {
+  background: none;
+  border: none;
+  color: var(--kap-blue);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+}
+
+/* ---- Status chips ---- */
+.kap-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--app-font-smallPrint);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+
+  &.green { color: var(--kap-green); }
+  &.amber { color: var(--kap-amber); }
+  &.red   { color: var(--kap-red); }
+  &.blue  { color: var(--kap-blue); }
+  &.grey  { color: var(--kap-faint); }
+}
+
+/* ---- Progress bar ---- */
+.kap-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--kap-blue), var(--kap-green));
+    transition: width 0.4s;
+  }
+}
+
+/* ---- Tables ---- */
+.kap-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    font-family: var(--app-font-smallPrint);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--kap-faint);
+    font-weight: normal;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--kap-line);
+  }
+  td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--kap-line);
+    vertical-align: top;
+  }
+  .num { text-align: right; white-space: nowrap; }
+}
+
+.kap-scroll { overflow-x: auto; }
+
+/* ---- Messages from the app ---- */
+.kap-alert {
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  margin: 12px 0;
+  border-left: 3px solid var(--kap-red);
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--kap-red);
+
+  &.ok {
+    border-color: var(--kap-green);
+    background: rgba(76, 209, 138, 0.1);
+    color: var(--kap-green);
+  }
+}
+
+@media (max-width: 600px) {
+  .kap-page { padding: 20px 16px 48px; }
+  .kap-page-head h1 { font-size: 1.45rem; }
+}
+
+@media print {
+  ion-app { background: #fff !important; }
+  .no-print { display: none !important; }
+}

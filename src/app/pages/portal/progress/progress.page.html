@@ -1,13 +1,109 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>progress</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-portal-header title="Projects"></app-portal-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">progress</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="kap-page">
+
+    <div class="kap-page-head">
+      <div>
+        <p class="kap-eyebrow">Project tracking</p>
+        <h1>Projects</h1>
+        <p>{{ isAdmin() ? 'Create projects and tick off each stage as you go.' : 'Follow every stage of your project.' }}</p>
+      </div>
+      @if (isAdmin()) {
+        <button class="kap-btn" (click)="showForm = !showForm">{{ showForm ? 'Close' : 'New project' }}</button>
+      }
+    </div>
+
+    <!-- New project (owner) -->
+    @if (isAdmin() && showForm) {
+      <div class="kap-card">
+        <h2>New project</h2>
+        <div class="kap-form-grid">
+          <div class="kap-field">
+            <label>Client</label>
+            <select class="kap-control" [(ngModel)]="form.clientId">
+              <option value="">Choose a client…</option>
+              @for (c of clients(); track c.uid) {
+                <option [value]="c.uid">{{ c.displayName }}{{ c.companyName ? ' – ' + c.companyName : '' }}</option>
+              }
+            </select>
+          </div>
+          <div class="kap-field">
+            <label>Title</label>
+            <input class="kap-control" [(ngModel)]="form.title" placeholder="e.g. Brand video 2027" />
+          </div>
+          <div class="kap-field">
+            <label>Due date</label>
+            <input class="kap-control" type="date" [(ngModel)]="form.dueDate" />
+          </div>
+        </div>
+        <div class="kap-field">
+          <label>Description</label>
+          <textarea class="kap-control" [(ngModel)]="form.description" placeholder="What's being made"></textarea>
+        </div>
+        <div class="kap-field">
+          <label>Stages (one per line)</label>
+          <textarea class="kap-control" [(ngModel)]="form.stages" rows="6"></textarea>
+        </div>
+        @if (error) { <p class="kap-alert">{{ error }}</p> }
+        <button class="kap-btn" (click)="createProject()" [disabled]="saving">
+          {{ saving ? 'Saving…' : 'Create project' }}
+        </button>
+      </div>
+    }
+
+    <!-- Filter -->
+    <div class="tabs">
+      <button [class.on]="filter() === 'active'" (click)="filter.set('active')">Active</button>
+      <button [class.on]="filter() === 'completed'" (click)="filter.set('completed')">Completed</button>
+      <button [class.on]="filter() === 'all'" (click)="filter.set('all')">All</button>
+    </div>
+
+    @for (p of shown(); track p.projectId) {
+      <div class="kap-card">
+        <div class="kap-row">
+          <div>
+            <h3>{{ p.title }}</h3>
+            <div class="kap-faint">
+              @if (isAdmin()) { {{ p.clientName }} · }
+              Started {{ p.startDate | when }} · Due {{ p.dueDate | when }}
+            </div>
+          </div>
+          <span class="kap-chip" [class]="'kap-chip ' + statusColour(p.status)">{{ statusLabel(p.status) }}</span>
+        </div>
+
+        @if (p.description) { <p class="kap-muted">{{ p.description }}</p> }
+
+        <div class="progress-line">
+          <div class="kap-bar"><span [style.width.%]="p.progress"></span></div>
+          <strong>{{ p.progress }}%</strong>
+        </div>
+
+        <ol class="stages">
+          @for (s of p.stages; track $index) {
+            <li [class.done]="s.completed">
+              @if (isAdmin()) {
+                <label>
+                  <input type="checkbox" [checked]="s.completed" (change)="toggleStage(p, $index)" />
+                  {{ s.label }}
+                </label>
+              } @else {
+                <span class="dot"></span>{{ s.label }}
+              }
+              @if (s.completed) { <span class="kap-faint">{{ s.completedAt | when }}</span> }
+            </li>
+          }
+        </ol>
+
+        @if (isAdmin()) {
+          <button class="kap-btn danger small" (click)="remove(p)">Delete project</button>
+        }
+      </div>
+    } @empty {
+      <div class="kap-card kap-empty">
+        {{ filter() === 'completed' ? 'No completed projects yet.' : 'No projects to show.' }}
+      </div>
+    }
+
+  </div>
 </ion-content>

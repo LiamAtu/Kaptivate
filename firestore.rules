@@ -1,47 +1,134 @@
 rules_version = '2';
+
+// Kaptivate – who can read and write what.
+// The owner has role 'admin' on their users/{uid} document.
+// Clients can only ever see documents that carry their own uid as clientId.
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function signedIn() {
+      return request.auth != null;
+    }
+
     function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isOwner(clientId) {
-      return request.auth.uid == clientId;
+      return signedIn() && request.auth.uid == clientId;
     }
 
+    // Only these fields changed in this update
+    function onlyChanges(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    // ---- Accounts ----------------------------------------------------
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow update: if isOwner(userId) && !('role' in request.resource.data);
-      allow create: if request.auth != null;
+      // Sign-up always creates a client; only the owner can make an admin (in the console)
+      allow create: if isOwner(userId) && request.resource.data.role == 'client';
+      allow update: if (isOwner(userId)
+                        && onlyChanges(['displayName', 'companyName', 'phone', 'lastLoginAt']))
+                    || isAdmin();
     }
 
-    match /projects/{projectId} {
+    // ---- Projects: the owner manages them, clients follow progress ---
+    match /projects/{id} {
       allow read: if isOwner(resource.data.clientId) || isAdmin();
       allow write: if isAdmin();
     }
 
+    // ---- Messages ------------------------------------------------------
     match /threads/{threadId} {
       allow read: if isOwner(resource.data.clientId) || isAdmin();
-      allow write: if isOwner(resource.data.clientId) || isAdmin();
+      allow create: if isOwner(request.resource.data.clientId) || isAdmin();
+      allow update: if (isOwner(resource.data.clientId)
+                        && request.resource.data.clientId == resource.data.clientId)
+                    || isAdmin();
+      allow delete: if isAdmin();
+
       match /messages/{messageId} {
-        allow read, write: if isOwner(
-          get(/databases/$(database)/documents/threads/$(threadId)).data.clientId
-        ) || isAdmin();
+        function threadClient() {
+          return get(/databases/$(database)/documents/threads/$(threadId)).data.clientId;
+        }
+        allow read: if isOwner(threadClient()) || isAdmin();
+        // You can only post messages as yourself
+        allow create: if (isOwner(threadClient()) || isAdmin())
+                      && request.resource.data.senderId == request.auth.uid;
+        allow delete: if isAdmin();
       }
     }
 
-    match /files/{fileId} {
+    // ---- Files (the file itself is in Storage, see storage.rules) -----
+    match /files/{id} {
       allow read: if isOwner(resource.data.clientId) || isAdmin();
-      allow create: if request.auth != null;
+      allow create: if (isOwner(request.resource.data.clientId)
+                        && request.resource.data.uploadedBy == 'client')
+                    || isAdmin();
       allow delete: if isAdmin();
     }
 
-    match /bookings/{bookingId} {
+    // ---- Quotes: the client can only accept or decline ---------------
+    match /proposals/{id} {
       allow read: if isOwner(resource.data.clientId) || isAdmin();
-      allow create: if request.auth != null;
-      allow update: if isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin()
+                    || (isOwner(resource.data.clientId)
+                        && resource.data.status == 'sent'
+                        && request.resource.data.status in ['accepted', 'declined']
+                        && onlyChanges(['status', 'respondedAt']));
     }
 
+    // ---- Contracts: the client can only sign -------------------------
+    match /contracts/{id} {
+      allow read: if isOwner(resource.data.clientId) || isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin()
+                    || (isOwner(resource.data.clientId)
+                        && resource.data.status == 'sent'
+                        && request.resource.data.status == 'signed'
+                        && request.resource.data.signedName is string
+                        && request.resource.data.signedName.size() > 1
+                        && onlyChanges(['status', 'signedName', 'signedAt']));
+    }
+
+    // ---- Invoices: read-only for clients -----------------------------
+    match /invoices/{id} {
+      allow read: if isOwner(resource.data.clientId) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ---- Project briefs (forms) ---------------------------------------
+    match /briefs/{id} {
+      allow read: if isOwner(resource.data.clientId) || isAdmin();
+      allow create: if isOwner(request.resource.data.clientId);
+      allow update, delete: if isAdmin();
+    }
+
+    // ---- Bookings -----------------------------------------------------
+    match /bookings/{id} {
+      allow read: if isOwner(resource.data.clientId) || isAdmin();
+      allow create: if isOwner(request.resource.data.clientId)
+                    && request.resource.data.status == 'pending';
+      allow update: if isAdmin()
+                    || (isOwner(resource.data.clientId)
+                        && request.resource.data.status == 'cancelled'
+                        && onlyChanges(['status']));
+      allow delete: if isAdmin();
+    }
+
+    // ---- Contact form: anyone can send, only the owner can read -------
+    match /enquiries/{id} {
+      allow create: if request.resource.data.handled == false
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() <= 100
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 200
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() <= 3000;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }
