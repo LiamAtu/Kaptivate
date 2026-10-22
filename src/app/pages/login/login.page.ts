@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { AuthService } from '../../services/auth';
 
@@ -20,11 +20,13 @@ import { AuthService } from '../../services/auth';
 export class LoginPage {
 
   private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   email = '';
   password = '';
   loading = false;
   errorMessage = '';
+  infoMessage = '';
 
   async login() {
     if (!this.email || !this.password) {
@@ -36,7 +38,8 @@ export class LoginPage {
     this.errorMessage = '';
 
     try {
-      await this.authService.login(this.email, this.password);
+      await this.authService.login(this.email, this.password,
+        this.route.snapshot.queryParamMap.get('returnUrl') ?? undefined);
     } catch (error: any) {
       this.loading = false;
       switch (error.code) {
@@ -52,5 +55,20 @@ export class LoginPage {
           this.errorMessage = 'Something went wrong. Please try again.';
       }
     }
+  }
+
+  async forgotPassword() {
+    this.errorMessage = '';
+    this.infoMessage = '';
+    if (!this.email) {
+      this.errorMessage = 'Enter your email above, then click "Forgot password?" again.';
+      return;
+    }
+    try {
+      await this.authService.resetPassword(this.email);
+    } catch {
+      // Ignored: the same message is shown either way, so the form doesn't reveal which emails have accounts
+    }
+    this.infoMessage = 'If that email has an account, a password reset link is on its way.';
   }
 }

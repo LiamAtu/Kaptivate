@@ -1,0 +1,61 @@
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+
+  button {
+    background: transparent;
+    border: 1px solid var(--kap-line);
+    color: var(--kap-muted);
+    border-radius: 999px;
+    padding: 7px 16px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+
+    &.on { background: var(--kap-navy-light); color: #fff; border-color: transparent; }
+  }
+}
+
+.progress-line {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 16px 0 6px;
+
+  .kap-bar { flex: 1; }
+}
+
+.stages {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 18px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--kap-line);
+    border-radius: 6px;
+    color: var(--kap-muted);
+
+    &.done { color: #fff; border-color: rgba(76, 209, 138, 0.45); }
+  }
+
+  label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  input { width: 16px; height: 16px; accent-color: var(--kap-green); }
+
+  .dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 2px solid var(--kap-faint);
+    margin-right: 8px;
+  }
+  li.done .dot { background: var(--kap-green); border-color: var(--kap-green); }
+}

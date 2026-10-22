@@ -1,0 +1,75 @@
+ion-toolbar {
+  --background: rgba(10, 14, 22, 0.88);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.bar {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.logo {
+  font-family: var(--app-font-MainHeading);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 6px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+
+  a:not(.kap-btn) {
+    color: var(--kap-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    letter-spacing: 1px;
+
+    &:hover, &.active { color: #fff; }
+  }
+}
+
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+
+  span { width: 22px; height: 2px; background: #fff; display: block; }
+}
+
+@media (max-width: 760px) {
+  .burger { display: flex; }
+
+  .links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 24px 18px;
+    background: rgba(10, 14, 22, 0.97);
+    border-bottom: 1px solid var(--kap-line);
+
+    &.open { display: flex; }
+
+    a:not(.kap-btn) { padding: 12px 0; }
+    .kap-btn { margin-top: 8px; }
+  }
+}

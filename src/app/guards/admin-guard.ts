@@ -1,5 +1,11 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../services/auth';
 
-export const adminGuard: CanActivateFn = (route, state) => {
-  return true;
+/** Only the owner (role 'admin') can open admin pages; clients go back to their dashboard. */
+export const adminGuard: CanActivateFn = async () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  const profile = await auth.getProfile();
+  return profile?.role === 'admin' ? true : router.createUrlTree(['/portal/dashboard']);
 };

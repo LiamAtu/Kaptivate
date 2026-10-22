@@ -1,22 +1,27 @@
 rules_version = '2';
 
-// Craft rules based on data in your Firestore database
-// allow write: if firestore.get(
-//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+// Every client's files live under clients/{clientId}/...
+// Only that client and the owner (admin) can upload or download them.
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // This rule allows anyone with your Storage bucket reference to view, edit,
-    // and delete all data in your Storage bucket. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Storage bucket will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Storage bucket will be denied until you Update
-    // your rules
+    function isAdmin() {
+      return request.auth != null
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /clients/{clientId}/{allPaths=**} {
+      allow read: if request.auth != null && (request.auth.uid == clientId || isAdmin());
+      // Uploads up to 2 GB (video files are big)
+      allow create: if request.auth != null
+                    && (request.auth.uid == clientId || isAdmin())
+                    && request.resource.size < 2 * 1024 * 1024 * 1024;
+      allow delete: if isAdmin();
+    }
+
+    // Everything else is closed
     match /{allPaths=**} {
-      allow read, write: if request.time < timestamp.date(2026, 7, 3);
+      allow read, write: if false;
     }
   }
 }

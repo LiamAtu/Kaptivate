@@ -1,13 +1,81 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>dashboard</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-portal-header title="Dashboard"></app-portal-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">dashboard</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="kap-page">
+
+    <div class="kap-page-head">
+      <div>
+        <p class="kap-eyebrow">{{ isAdmin() ? 'Owner overview' : 'Your projects' }}</p>
+        <h1>Welcome back{{ firstName() ? ', ' + firstName() : '' }}</h1>
+      </div>
+      @if (!isAdmin()) {
+        <a class="kap-btn" routerLink="/portal/comms">Message us</a>
+      }
+    </div>
+
+    <!-- Things that need attention -->
+    <div class="kap-grid stats">
+      <a class="kap-card kap-stat tile" routerLink="/portal/progress">
+        <div class="value">{{ activeProjects().length }}</div>
+        <div class="label">Active project{{ activeProjects().length === 1 ? '' : 's' }}</div>
+      </a>
+
+      <a class="kap-card kap-stat tile" routerLink="/portal/comms" [class.alert]="unread() > 0">
+        <div class="value">{{ unread() }}</div>
+        <div class="label">Unread conversation{{ unread() === 1 ? '' : 's' }}</div>
+      </a>
+
+      @if (isAdmin()) {
+        <a class="kap-card kap-stat tile" routerLink="/portal/enquiries" [class.alert]="newEnquiries() + pendingBookings() > 0">
+          <div class="value">{{ newEnquiries() + pendingBookings() }}</div>
+          <div class="label">New enquiries &amp; bookings</div>
+        </a>
+        <a class="kap-card kap-stat tile" routerLink="/portal/invoices" [class.alert]="overdue() > 0">
+          <div class="value">{{ unpaidTotal() | euro }}</div>
+          <div class="label">Outstanding ({{ overdue() }} overdue)</div>
+        </a>
+      } @else {
+        <a class="kap-card kap-stat tile" routerLink="/portal/proposals" [class.alert]="openQuotes() + unsigned() > 0">
+          <div class="value">{{ openQuotes() + unsigned() }}</div>
+          <div class="label">Quotes &amp; contracts to review</div>
+        </a>
+        <a class="kap-card kap-stat tile" routerLink="/portal/invoices" [class.alert]="overdue() > 0">
+          <div class="value">{{ unpaidTotal() | euro }}</div>
+          <div class="label">To pay{{ overdue() ? ' (' + overdue() + ' overdue)' : '' }}</div>
+        </a>
+      }
+    </div>
+
+    <!-- Active projects -->
+    <div class="kap-card">
+      <div class="kap-row">
+        <h2>Active projects</h2>
+        <a class="kap-link" routerLink="/portal/progress">View all</a>
+      </div>
+
+      @for (p of activeProjects(); track p.projectId) {
+        <a class="project" routerLink="/portal/progress">
+          <div class="kap-row">
+            <div>
+              <strong>{{ p.title }}</strong>
+              @if (isAdmin()) { <span class="kap-faint"> · {{ p.clientName }}</span> }
+              <div class="kap-faint">Next: {{ nextStage(p) }} · Due {{ p.dueDate | when }}</div>
+            </div>
+            <span class="kap-chip blue">{{ statusLabel(p) }}</span>
+          </div>
+          <div class="kap-bar"><span [style.width.%]="p.progress"></span></div>
+        </a>
+      } @empty {
+        <p class="kap-empty">
+          @if (isAdmin()) {
+            No active projects. Start one from <a class="kap-link" routerLink="/portal/progress">Projects</a>.
+          } @else {
+            No active projects yet. Fill in a <a class="kap-link" routerLink="/portal/forms">project brief</a>
+            to get started.
+          }
+        </p>
+      }
+    </div>
+
+  </div>
 </ion-content>

@@ -203,3 +203,21 @@
     }
   }
 }
+.forgot {
+  text-align: right;
+  margin: -8px 0 0;
+  font-size: 0.8rem;
+
+  a { color: var(---app-color-LightGrey); cursor: pointer; text-decoration: underline; }
+}
+
+.info-message {
+  color: #4cd18a;
+  font-family: var(--app-font-smallPrint);
+  font-size: 0.8rem;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(76, 209, 138, 0.1);
+  border-left: 3px solid #4cd18a;
+  border-radius: 2px;
+}

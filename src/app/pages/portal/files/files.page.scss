@@ -1,0 +1,39 @@
+.drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s;
+
+  &:hover { border-color: var(--kap-blue); background: rgba(111, 156, 255, 0.06); }
+  &.busy { opacity: 0.5; cursor: progress; }
+
+  input { display: none; }
+}
+
+.upload-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) 3fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+
+  span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .kap-control { width: auto; padding: 8px 12px; }
+}
+
+.icon { margin-right: 8px; }
+
+.actions { display: flex; gap: 6px; justify-content: flex-end; }

@@ -1,13 +1,120 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>files</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-portal-header title="Files"></app-portal-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">files</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="kap-page">
+
+    <div class="kap-page-head">
+      <div>
+        <p class="kap-eyebrow">Shared files</p>
+        <h1>Files</h1>
+        <p>{{ isAdmin() ? 'Deliver drafts and final videos to clients.' : 'Send us your footage and assets, and download your finished videos here.' }}</p>
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div class="kap-card">
+      <h2>Upload files</h2>
+      <div class="kap-form-grid">
+        @if (isAdmin()) {
+          <div class="kap-field">
+            <label>Client</label>
+            <select class="kap-control" [(ngModel)]="uploadClient" (ngModelChange)="uploadProject = ''">
+              <option value="">Choose a client…</option>
+              @for (c of clients(); track c.uid) {
+                <option [value]="c.uid">{{ c.displayName }}</option>
+              }
+            </select>
+          </div>
+        }
+        <div class="kap-field">
+          <label>Project</label>
+          <select class="kap-control" [(ngModel)]="uploadProject">
+            <option value="">General (no project)</option>
+            @for (p of projectsFor(isAdmin() ? uploadClient : ''); track p.projectId) {
+              <option [value]="p.projectId">{{ p.title }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <label class="drop" [class.busy]="uploading().length > 0">
+        <input #picker type="file" multiple (change)="upload(picker)" [disabled]="uploading().length > 0" />
+        <strong>Choose files</strong>
+        <span class="kap-faint">Videos, photos, audio or documents · up to 2 GB each</span>
+      </label>
+
+      @for (u of uploading(); track $index) {
+        <div class="upload-row">
+          <span>{{ u.name }}</span>
+          <div class="kap-bar"><span [style.width.%]="u.pct"></span></div>
+          <span class="kap-faint">{{ u.pct }}%</span>
+        </div>
+      }
+      @if (message) { <p class="kap-alert ok">{{ message }}</p> }
+      @if (error) { <p class="kap-alert">{{ error }}</p> }
+    </div>
+
+    <!-- List -->
+    <div class="kap-card">
+      <div class="kap-row">
+        <h2>All files</h2>
+        <div class="filters">
+          @if (isAdmin()) {
+            <select class="kap-control" [ngModel]="clientFilter()" (ngModelChange)="clientFilter.set($event)">
+              <option value="">All clients</option>
+              @for (c of clients(); track c.uid) { <option [value]="c.uid">{{ c.displayName }}</option> }
+            </select>
+          }
+          <select class="kap-control" [ngModel]="projectFilter()" (ngModelChange)="projectFilter.set($event)">
+            <option value="">All projects</option>
+            <option value="general">General</option>
+            @for (p of projectsFor(clientFilter()); track p.projectId) {
+              <option [value]="p.projectId">{{ p.title }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="kap-scroll">
+        <table class="kap-table">
+          <thead>
+            <tr>
+              <th>File</th>
+              @if (isAdmin()) { <th>Client</th> }
+              <th>Project</th>
+              <th>From</th>
+              <th>Added</th>
+              <th class="num">Size</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (f of shown(); track f.fileId) {
+              <tr>
+                <td><span class="icon">{{ icon(f) }}</span>{{ f.fileName }}</td>
+                @if (isAdmin()) { <td>{{ clientName(f.clientId) }}</td> }
+                <td>{{ projectName(f.projectId) }}</td>
+                <td>
+                  <span class="kap-chip" [class]="f.uploadedBy === 'admin' ? 'kap-chip green' : 'kap-chip grey'">
+                    {{ f.uploadedBy === 'admin' ? 'Kaptivate' : 'Client' }}
+                  </span>
+                </td>
+                <td class="kap-faint">{{ f.uploadedAt | when }}</td>
+                <td class="num">{{ f.fileSize | size }}</td>
+                <td class="num actions">
+                  <a class="kap-btn small ghost" [href]="f.downloadUrl" target="_blank" rel="noopener">Download</a>
+                  @if (isAdmin()) {
+                    <button class="kap-btn small danger" (click)="remove(f)">Delete</button>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="7" class="kap-empty">No files yet.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
 </ion-content>
